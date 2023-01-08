@@ -52,16 +52,18 @@ func createBody(data):
 	body.color = Color(data['color'])
 	body.set_mode(data['mode'])	
 	body.set_mass(data['Mass[earths]'])
-	body.set_position(-Vector2(data['DistanceToSun[Mkm]'], 0))
+	body.set_position(Vector2(data['DistanceToSun[Mkm]'], 0))
 	return body
 
 func setInitialVelocity(body):
-	if body != sun:
-		var pos1 = body.position
-		var pos2 = sun.position
-		var r = pos1.distance_to(pos2)
-		var v = sqrt(G * sun.mass / r)
-		body.set_linear_velocity(Vector2(0, -v))
+	var v = 0
+	for other in bodies:
+		if body != other:	
+			var pos1 = body.position
+			var pos2 = other.position
+			var r = pos1.distance_to(pos2)
+			v += sqrt(G * other.mass / r)
+	body.set_linear_velocity(Vector2(0, v))
 
 
 func _physics_process(delta):
