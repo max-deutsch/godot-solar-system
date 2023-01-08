@@ -98,8 +98,9 @@ func applyForces(body, delta):
 			var forceVector = dir * -force			
 			body.add_central_force(forceVector)
 
-# # Kinematic
-
+# # Kinematic Version
+# Inspired by
+# https://godotengine.org/qa/79496/how-do-you-make-the-player-jump-planet-with-realistic-gravity
 
 var GRAVITY = 100
 

@@ -17,7 +17,11 @@ func init():
 
 
 func _input(event):
-	if event.is_action("reset_view"):
+	if event.is_action("ui_down"):
+		Engine.time_scale = max(Engine.time_scale - 0.1, 0.0)
+	elif event.is_action("ui_up"):
+		Engine.time_scale += 0.1
+	elif event.is_action("reset_view"):
 		init()
 	elif event.is_action("zoom_in"):
 		zoom -= Vector2(1, 1)
