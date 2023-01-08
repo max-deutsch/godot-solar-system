@@ -109,11 +109,12 @@ func setInitialVelocitiesKinematic():
 		if body1.bodyName != 'Sun':
 			for body2 in bodies:
 				if body1 != body2:
-					var pos1 = body1.position
-					var pos2 = body2.position
+					var pos1 = body1.global_transform.origin
+					var pos2 = body2.global_transform.origin
 					var r = pos1.distance_to(pos2)
 					v += sqrt(GRAVITY * body2.mass / r)
-			body1.velocity = Vector2(0, -v) * 0.2
+			var SOME_FACTOR = 0.34
+			body1.velocity = Vector2(0, -v) * SOME_FACTOR
 
 
 # func _process(delta):
@@ -125,9 +126,9 @@ func setInitialVelocitiesKinematic():
 
 
 func newtonian_gravity(delta, obj_1, obj_2):
-    obj_1.velocity += (obj_2.global_transform.origin\
-        - obj_1.global_transform.origin).normalized()\
-        * GRAVITY * obj_2.mass\
-        / pow((obj_2.global_transform.origin.\
-        distance_to(obj_1.global_transform.origin)), 2) * delta
-    obj_1.move_and_slide(obj_1.velocity, Vector2.UP)
+	obj_1.velocity += (obj_2.global_transform.origin\
+		- obj_1.global_transform.origin).normalized()\
+		* GRAVITY * obj_2.mass\
+		/ pow((obj_2.global_transform.origin.\
+		distance_to(obj_1.global_transform.origin)), 2) * delta
+	obj_1.move_and_slide(obj_1.velocity, Vector2.UP)
