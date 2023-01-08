@@ -3,36 +3,31 @@ extends Node2D
 const celestialBodyScene = preload("res://scenes/CelestialBody.tscn");
 const dataPath = "res://data/solar-system.csv"
 
-var celestialBodies = {}
+var bodies = {}
 
 func _ready():
-	loadData()
-	print(celestialBodies)
-	addSun()
-	addPlanet('earth')
+	var data = loadData()
+	addBodies(data)
+	
 
 func loadData():
-	var file = File.new()
+	var file = File.new()	
 	file.open(dataPath, file.READ)
+	var data = {}
 	var header = file.get_csv_line(';')
 	while !file.eof_reached():
 		var row = file.get_csv_line(';')
 		if(row.size() > 1):
 			var name = row[0]
-			celestialBodies[name] = {}
+			data[name] = {}
 			for i in range(1, header.size()):
-				celestialBodies[name][header[i]] = float(row[i])
-		
-func addSun():
-	var sun = celestialBodyScene.instance()
-	sun.set_mode(1)
-	# todo sprite
+				data[name][header[i]] = float(row[i])
+	return data
 
-	add_child(sun)
-	celestialBodies['sun'] = sun
+func addBodies(data):
+	for name in data:
+		var body = celestialBodyScene.instance()		
+		body.set_mode(int(data[name]['static']))
 
-func addPlanet(name):
-	#var planet = celestialBodyScene.instance()
-
-	pass
-
+		bodies[body['name']] = body
+		add_child(body)
