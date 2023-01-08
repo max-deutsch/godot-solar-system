@@ -7,8 +7,7 @@ var bodies = {}
 
 func _ready():
 	var data = loadData()
-	addBodies(data)
-	
+	initBodies(data)	
 
 func loadData():
 	var file = File.new()	
@@ -24,10 +23,14 @@ func loadData():
 				data[name][header[i]] = float(row[i])
 	return data
 
-func addBodies(data):
-	for name in data:
-		var body = celestialBodyScene.instance()		
-		body.set_mode(int(data[name]['static']))
-
-		bodies[body['name']] = body
+func initBodies(data):
+	for name in data:	
+		var body = createBody(data[name])
+		bodies[name] = body
 		add_child(body)
+
+func createBody(data):
+	var body: RigidBody2D = celestialBodyScene.instance()		
+	body.set_mode(int(data['static']))
+	body.set_position(Vector2(data['DistanceToSun[Mkm]'], 0))
+	return body
