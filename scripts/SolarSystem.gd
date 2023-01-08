@@ -1,11 +1,14 @@
 extends Node2D
 
 const celestialBodyScene = preload("res://scenes/CelestialBody.tscn");
+const celestialBodyKinematicScene = preload("res://scenes/CelestialBodyKinematic.tscn");
 const dataPath = "res://data/solar-system.csv"
 const G = 100
 
 var bodies = []
 var sun
+
+var useKinematic = true
 
 func _ready():
 	print(G)
@@ -43,14 +46,22 @@ func initBodies(data):
 		add_child(body)
 		if body.bodyName == 'Sun':
 			sun = body
-	for body in bodies:
-		setInitialVelocity(body)
+	
+	if useKinematic:
+		setInitialVelocitiesKinematic()
+	else:
+		for body in bodies:
+			setInitialVelocity(body)
 
 func createBody(data):
-	var body:RigidBody2D = celestialBodyScene.instance()
+	var body
+	if useKinematic:
+		body = celestialBodyKinematicScene.instance()
+	else:
+		body = celestialBodyScene.instance()
 	body.bodyName = data['Name']
 	body.color = Color(data['color'])
-	body.set_mode(data['mode'])	
+	body.set_mode(data['mode'])
 	body.set_mass(data['Mass[earths]'])
 	body.set_position(Vector2(data['DistanceToSun[Mkm]'], 0))
 	return body
@@ -63,12 +74,18 @@ func setInitialVelocity(body):
 			var pos2 = other.position
 			var r = pos1.distance_to(pos2)
 			v += sqrt(G * other.mass / r)
-	body.set_linear_velocity(Vector2(0, v))
+	body.set_linear_velocity(Vector2(0, -v))
 
 
 func _physics_process(delta):
-	for body in bodies:
-		applyForces(body, delta)
+	if useKinematic:
+		for obj_1 in bodies:
+			for obj_2 in bodies:
+				if obj_1 != obj_2:
+					newtonian_gravity(delta, obj_1, obj_2)
+	else:
+		for body in bodies:
+			applyForces(body, delta)
 
 func applyForces(body, delta):
 	for other in bodies:
@@ -80,3 +97,37 @@ func applyForces(body, delta):
 			var dir = pos2.direction_to(pos1)
 			var forceVector = dir * -force			
 			body.add_central_force(forceVector)
+
+# # Kinematic
+
+
+var GRAVITY = 100
+
+func setInitialVelocitiesKinematic():
+	for body1 in bodies:
+		var v = 0
+		if body1.bodyName != 'Sun':
+			for body2 in bodies:
+				if body1 != body2:
+					var pos1 = body1.position
+					var pos2 = body2.position
+					var r = pos1.distance_to(pos2)
+					v += sqrt(GRAVITY * body2.mass / r)
+			body1.velocity = Vector2(0, -v) * 0.2
+
+
+# func _process(delta):
+# 	if 
+#     for obj_1 in bodies:
+#         for obj_2 in bodies:
+#             if obj_1 != obj_2:
+#                 newtonian_gravity(delta, obj_1, obj_2)
+
+
+func newtonian_gravity(delta, obj_1, obj_2):
+    obj_1.velocity += (obj_2.global_transform.origin\
+        - obj_1.global_transform.origin).normalized()\
+        * GRAVITY * obj_2.mass\
+        / pow((obj_2.global_transform.origin.\
+        distance_to(obj_1.global_transform.origin)), 2) * delta
+    obj_1.move_and_slide(obj_1.velocity, Vector2.UP)
