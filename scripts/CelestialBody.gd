@@ -1,7 +1,7 @@
 extends RigidBody2D
 
 var bodyName
-var radius = 10
+var radius = pow(10, 1)
 var color = Color.deeppink
 
 func _ready():

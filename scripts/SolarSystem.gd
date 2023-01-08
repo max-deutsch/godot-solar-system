@@ -5,8 +5,10 @@ const dataPath = "res://data/solar-system.csv"
 const G = 100
 
 var bodies = []
+var sun
 
 func _ready():
+	print(G)
 	var data = loadData()
 	initBodies(data)
 
@@ -35,12 +37,14 @@ func loadData():
 	return data
 
 func initBodies(data):
-	for name in data:	
+	for name in data:
 		var body = createBody(data[name])
 		bodies.append(body)
 		add_child(body)
-	# for body in bodies:
-	# 	applyInitialVelocity(body)
+		if body.bodyName == 'Sun':
+			sun = body
+	for body in bodies:
+		setInitialVelocity(body)
 
 func createBody(data):
 	var body:RigidBody2D = celestialBodyScene.instance()
@@ -48,22 +52,29 @@ func createBody(data):
 	body.color = Color(data['color'])
 	body.set_mode(data['mode'])	
 	body.set_mass(data['Mass[earths]'])
-	body.set_position(Vector2(data['DistanceToSun[Mkm]'], 0))	
+	body.set_position(-Vector2(data['DistanceToSun[Mkm]'], 0))
 	return body
 
-# func applyInitialVelocity(body):
+func setInitialVelocity(body):
+	if body != sun:
+		var pos1 = body.position
+		var pos2 = sun.position
+		var r = pos1.distance_to(pos2)
+		var v = sqrt(G * sun.mass / r)
+		body.set_linear_velocity(Vector2(0, -v))
 
 
 func _physics_process(delta):
 	for body in bodies:
-		applyForces(body)
+		applyForces(body, delta)
 
-func applyForces(body):
+func applyForces(body, delta):
 	for other in bodies:
-		if body != other:			
-			var r2 = body.position.distance_squared_to(other.position)
-			var force = G * body.mass * other.mass / r2
-			var dir = other.position.direction_to(body.position)
-			var forceVector = dir * -force
+		if body != other:						
+			var pos1 = body.position
+			var pos2 = other.position
+			var r2 = pos1.distance_squared_to(pos2)
+			var force = G * body.mass * other.mass / r2			
+			var dir = pos2.direction_to(pos1)
+			var forceVector = dir * -force			
 			body.add_central_force(forceVector)
-			# print("%s - %s: %f" % [body.bodyName, other.bodyName, force])

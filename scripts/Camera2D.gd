@@ -7,10 +7,18 @@ var screen_start_position
 var dragging = false
 
 
+
+func _ready():
+	init()
+
+func init():
+	zoom = Vector2(1, 1) * 5
+	position = Vector2(0, 0)
+
+
 func _input(event):
 	if event.is_action("reset_view"):
-		zoom = Vector2(1,1)
-		position = Vector2(0,0)
+		init()
 	elif event.is_action("zoom_in"):
 		zoom -= Vector2(1, 1)
 	elif event.is_action("zoom_out"):
