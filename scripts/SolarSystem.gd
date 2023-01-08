@@ -79,10 +79,10 @@ func setInitialVelocity(body):
 
 func _physics_process(delta):
 	if useKinematic:
-		for obj_1 in bodies:
-			for obj_2 in bodies:
-				if obj_1 != obj_2:
-					newtonian_gravity(delta, obj_1, obj_2)
+		for body1 in bodies:
+			for body2 in bodies:
+				if body1 != body2:
+					apply_newtonian_gravity(delta, body1, body2)
 	else:
 		for body in bodies:
 			applyForces(body, delta)
@@ -116,19 +116,10 @@ func setInitialVelocitiesKinematic():
 			var SOME_FACTOR = 0.34
 			body1.velocity = Vector2(0, -v) * SOME_FACTOR
 
-
-# func _process(delta):
-# 	if 
-#     for obj_1 in bodies:
-#         for obj_2 in bodies:
-#             if obj_1 != obj_2:
-#                 newtonian_gravity(delta, obj_1, obj_2)
-
-
-func newtonian_gravity(delta, obj_1, obj_2):
-	obj_1.velocity += (obj_2.global_transform.origin\
-		- obj_1.global_transform.origin).normalized()\
-		* GRAVITY * obj_2.mass\
-		/ pow((obj_2.global_transform.origin.\
-		distance_to(obj_1.global_transform.origin)), 2) * delta
-	obj_1.move_and_slide(obj_1.velocity, Vector2.UP)
+func apply_newtonian_gravity(delta, body1, body2):
+	var pos1 = body1.position
+	var pos2 = body2.position
+	var dir = pos1.direction_to(pos2)
+	var r2 = pos1.distance_squared_to(pos2)
+	body1.velocity += dir * G * body2.mass / r2 * delta	
+	body1.move_and_slide(body1.velocity, Vector2.UP)
