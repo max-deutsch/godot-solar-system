@@ -1,5 +1,6 @@
 extends RigidBody2D
 
+var bodyName
 var radius = 10
 var color = Color.deeppink
 
