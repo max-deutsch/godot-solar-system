@@ -1,7 +1,7 @@
 extends KinematicBody2D
 
 var bodyName
-var radius = pow(10, 1)
+var radius = 20
 var color = Color.deeppink
 
 var mass

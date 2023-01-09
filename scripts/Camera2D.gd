@@ -6,7 +6,7 @@ var screen_start_position
 
 var dragging = false
 
-
+signal zoom_changed(value)
 
 func _ready():
 	init()
@@ -25,8 +25,10 @@ func _input(event):
 		init()
 	elif event.is_action("zoom_in"):
 		zoom -= Vector2(1, 1)
+		emit_signal("zoom_changed", zoom)
 	elif event.is_action("zoom_out"):
 		zoom += Vector2(1, 1)
+		emit_signal("zoom_changed", zoom)
 	elif event.is_action("drag"):
 		if event.is_pressed():
 			mouse_start_pos = event.position

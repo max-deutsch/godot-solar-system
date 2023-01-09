@@ -6,6 +6,8 @@ const dataPath = "res://data/solar-system.csv"
 const roundTimesPath = "res://data/round-times.csv"
 const G = 100
 
+onready var camera = $Camera2D
+
 var bodies = []
 var sun
 
@@ -15,6 +17,12 @@ func _ready():
 	print(G)
 	var data = loadData()
 	initBodies(data)
+	camera.connect("zoom_changed", self, "on_zoom_changed")
+	
+func on_zoom_changed(value):
+	for body in bodies:
+		body.radius = value.x * 4
+		body.update()
 
 func loadData():
 	var file = File.new()	
