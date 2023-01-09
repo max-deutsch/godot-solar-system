@@ -64,6 +64,8 @@ func createBody(data):
 	body.set_mode(data['mode'])
 	body.set_mass(data['Mass[earths]'])
 	body.set_position(Vector2(data['DistanceToSun[Mkm]'], 0))
+	body.last_pos = body.position
+	
 	return body
 
 func setInitialVelocity(body):
@@ -85,7 +87,7 @@ func _physics_process(delta):
 					apply_newtonian_gravity(delta, body1, body2)
 	else:
 		for body in bodies:
-			applyForces(body, delta)
+			applyForces(body, delta)	
 
 func applyForces(body, delta):
 	for other in bodies:
