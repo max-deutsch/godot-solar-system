@@ -3,6 +3,7 @@ extends Node2D
 const celestialBodyScene = preload("res://scenes/CelestialBody.tscn");
 const celestialBodyKinematicScene = preload("res://scenes/CelestialBodyKinematic.tscn");
 const dataPath = "res://data/solar-system.csv"
+const roundTimesPath = "res://data/round-times.csv"
 const G = 100
 
 var bodies = []
@@ -38,6 +39,22 @@ func loadData():
 				data[name][header[i]] = value
 
 	return data
+
+	
+func _input(event):
+	if event.is_action('save_round_times'):
+		var file = File.new()
+		file.open(self.roundTimesPath, file.WRITE)
+		for body in bodies:
+			if body.roundTimesMs.size() > 0:
+				var sumRoundTimesMs = 0
+				for roundTimeMs in body.roundTimesMs:
+					sumRoundTimesMs += roundTimeMs						
+				var meanRoundTimesMs = sumRoundTimesMs/body.roundTimesMs.size()
+				var row = PoolStringArray([body.bodyName, meanRoundTimesMs])
+				file.store_csv_line(row, ';')
+		print('saved round times')
+
 
 func initBodies(data):
 	for name in data:

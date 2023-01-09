@@ -30,6 +30,6 @@ func _process(delta):
 		var roundTimeMs = OS.get_system_time_msecs() - roundStartTimeMs
 		self.roundTimesMs.append(roundTimeMs)
 		self.roundStartTimeMs = OS.get_system_time_msecs()
-		print("%s round time: %d [ms]" % [bodyName, roundTimeMs])	
+#		print("%s round time: %d [ms]" % [bodyName, roundTimeMs])	
 	
 	self.last_pos = self.position
